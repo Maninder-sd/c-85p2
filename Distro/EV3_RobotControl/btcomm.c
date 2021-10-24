@@ -305,7 +305,7 @@ int BT_motor_port_start(char port_ids, char power)
 #endif  
  
  write(*socket_id,&cmd_string[0],15);
- read(*socket_id,&reply[0],1023);
+//  read(*socket_id,&reply[0],1023);
 
  message_id_counter++;
 

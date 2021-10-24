@@ -16,10 +16,11 @@ int turn_till_black(int);
 long curr_time();
 void turn_at_intersection(int);
 void led_test();
+int read_colour();
 
 long curr_time()
-// returns time in milliseconds since program started
 {
+  // returns time in milliseconds since program started
   clock_t time=0;
 
   time = clock();
@@ -87,7 +88,7 @@ int main(int argc, char *argv[])
 
   int TURN_DIRECTION = 1;
   turn_at_intersection(TURN_DIRECTION);
-  //led_test();
+  // led_test();
   printf("done");
 
   BT_close();
@@ -105,17 +106,17 @@ void led_test()
     // RGB[1] *=0.25;
     // RGB[2] *=0.25;
     // printf("\n (R,G,B) is (%d,%d,%d)\n", RGB[0], RGB[1], RGB[2]);
-    col_ind = BT_read_colour_sensor(PORT_1);
+    col_ind = read_colour();
     printf("\n %d \n", col_ind);
 
-    sleep(1);
+    // sleep(1);
   }
 }
 
-int read_colour(int x){
+int read_colour(){
   // function does multiple reads and returns most frequent COLOR
   int col_readings[8] = {0,0,0,0,0,0,0,0};
-  for(int i=0; i<9;i++){
+  for(int i=0; i<10;i++){
     int index = BT_read_colour_sensor(PORT_1);
     col_readings[index] +=1; 
   }
@@ -141,7 +142,7 @@ void road_find()
   while (is_lost)
   {
     BT_motor_port_start(MOTOR_A | MOTOR_D, MAX_SPEED); 
-    col_ind = BT_read_colour_sensor(PORT_1);
+    col_ind = read_colour();
     if (col_ind == 1)
     { // find black
     BT_motor_port_start(MOTOR_A | MOTOR_D, 0);
@@ -152,11 +153,11 @@ void road_find()
 }
 
 int road_detected() {
-  return (BT_read_colour_sensor(PORT_1) == 1);
+  return (read_colour() == 1);
 }
 
 int intersection_or_boundary_detected() {
-  int colourID = BT_read_colour_sensor(PORT_1);
+  int colourID = read_colour();
   printf("int or bound : %d\n",colourID) ;
   return (colourID == 4 || colourID == 5); 
 }
@@ -169,7 +170,7 @@ void turn_at_intersection(int direction)
 // ASSUME AT YELLOW AND ROAD FOUND
   traverse_road(&road_detected);
   traverse_road(&intersection_or_boundary_detected);
-  int colourID = BT_read_colour_sensor(PORT_1);
+  int colourID = read_colour();
 
   //reverse till back on road
   BT_motor_port_start(MOTOR_D | MOTOR_A, -20);
@@ -197,18 +198,21 @@ void traverse_road(int (*exit_conditon_func)(void))
   int col_ind;
   int turnDirection = 1;
 
-  col_ind = BT_read_colour_sensor(PORT_1);
+  col_ind = read_colour();
   while (1)
   {
-
+    fprintf(stdout,"traverse before read\n");
+    col_ind = read_colour();
+    fprintf(stdout,"traverse after read\n"); col_ind = read_colour();
     if (exit_conditon_func()) {
+      fprintf(stdout,"exit cond true");
       BT_motor_port_stop(MOTOR_D | MOTOR_A, 1);
       
       return;
     }
 
     BT_motor_port_start(MOTOR_A | MOTOR_D, MAX_SPEED);
-    col_ind = BT_read_colour_sensor(PORT_1);
+
     if (col_ind != 1 && col_ind != 4 && col_ind != 7)//not black and not yellow
     { 
       fprintf(stdout, "colour ID: %d\n", col_ind);
@@ -229,7 +233,8 @@ int turn_till_black(int turnDirection)
 
   time_stamp = curr_time(); //time(NULL);
 
-  int PENDULUM_DURATION = 15;
+  int PENDULUM_DURATION = 10;
+
   BT_motor_port_start(MOTOR_D, turnDirection * -MAX_SPEED);
   BT_motor_port_start(MOTOR_A, turnDirection * MAX_SPEED);
   while (curr_time() - time_stamp < PENDULUM_DURATION)
@@ -243,7 +248,7 @@ int turn_till_black(int turnDirection)
       BT_motor_port_start(MOTOR_A, turnDirection * -MAX_SPEED);
       
     }
-    col_ind = BT_read_colour_sensor(PORT_1);
+    col_ind = read_colour();
     if (col_ind == 1 || col_ind == 4 || col_ind == 7)
     {
       printf("\n just found black and yellow\n");
@@ -267,7 +272,7 @@ int turn_till_black(int turnDirection)
   //   while (curr_time - time_stamp < time_diff)
   //   {
 
-  //     col_ind = BT_read_colour_sensor(PORT_1);
+  //     col_ind = read_colour();
   //     if (col_ind == 1)
   //     { //is black
   //       BT_motor_port_stop(MOTOR_A | MOTOR_D, 0);
@@ -280,7 +285,7 @@ int turn_till_black(int turnDirection)
   //   while (curr_time - time_stamp < time_diff)
   //   {
 
-  //     // col_ind = BT_read_colour_sensor(PORT_1);
+  //     // col_ind = read_colour();
   //     // if (col_ind == 1)
   //     // { //is black
   //     //   BT_motor_port_stop(MOTOR_A | MOTOR_D, 0);
@@ -298,7 +303,7 @@ int turn_till_black(int turnDirection)
   //     //   BT_motor_port_start(MOTOR_A, -25);
   //     // }
 
-  //     col_ind = BT_read_colour_sensor(PORT_1);
+  //     col_ind = read_colour();
   //     if (col_ind == 1)
   //     { //is blackBT_motor_port_stop(MOTOR_A | MOTOR_D, 0);
   //       BT_motor_port_stop(MOTOR_A | MOTOR_D, 0);
@@ -312,7 +317,7 @@ int turn_till_black(int turnDirection)
   //   while (curr_time - time_stamp < 200)
   //   {
 
-  //     col_ind = BT_read_colour_sensor(PORT_1);
+  //     col_ind = read_colour();
   //     if (col_ind == 1)
   //     { //is black
   //       BT_motor_port_stop(MOTOR_A | MOTOR_D, 0);

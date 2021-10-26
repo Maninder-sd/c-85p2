@@ -8,7 +8,7 @@
 #include <time.h>
 #include <math.h>
 
-#define MAX_SPEED 10
+#define MAX_SPEED 3
 #define NUM_SAMPLES 10
 #define NUM_SMALL_SAMPLES 3
 #define DO_COLOUR_READING -1
@@ -20,6 +20,7 @@ long curr_time();
 void turn_at_intersection(int);
 void led_test();
 int read_colour(int);
+void get_colours_at_intersection();
 
 long curr_time()
 {
@@ -90,7 +91,14 @@ int main(int argc, char *argv[])
   // traverse_road();
 
   int TURN_DIRECTION = -1;
-  turn_at_intersection(TURN_DIRECTION);
+    // BT_motor_port_start(MOTOR_C, -1* MAX_SPEED);
+// int vel = 0;
+//   while(1) {
+//     scanf("%d\n", &vel);
+//     BT_motor_port_start(MOTOR_C, vel);
+//   }
+  get_colours_at_intersection();
+  // turn_at_intersection(TURN_DIRECTION);
   // BT_motor_port_start(MOTOR_D|MOTOR_A, MAX_SPEED);
   // led_test();
   printf("done");
@@ -105,7 +113,7 @@ void led_test()
   int col_ind = 0;
   while (1)
   {
-    // BT_read_colour_sensor_RGB( PORT_1 ,RGB);
+    // BT_read_colour_sensor_RGB( PORT_3 ,RGB);
     // RGB[0] *=0.25;
     // RGB[1] *=0.25;
     // RGB[2] *=0.25;
@@ -123,7 +131,7 @@ int read_colour(int num_samples)
   int col_readings[8] = {0, 0, 0, 0, 0, 0, 0, 0};
   for (int i = 0; i < num_samples; i++)
   {
-    int index = BT_read_colour_sensor(PORT_1);
+    int index = BT_read_colour_sensor(PORT_3);
     col_readings[index] += 1;
   }
 
@@ -183,6 +191,201 @@ void printColour(int colourID)
 {
   fprintf(stdout, "Current colour reading: %d\n", colourID);
 }
+
+#define INTERSECTION_SAMPLES 100 // play around with this value
+
+void get_colours_at_intersection() {
+  // ASSUME robot is at intersection and is not moving
+  // implicitly assumes that the color sensor is at 90 degrees from the wheel axis
+
+  int bottom_left = -1, bottom_right = -1, top_left = -1, top_right = -1;
+  // turn color sesnor motor to the left, until you detect either green, white or blue
+  BT_motor_port_start(MOTOR_C, MAX_SPEED);
+
+  while (1) {
+    int current_colour = read_colour(NUM_SAMPLES);
+    fprintf(stdout, "current_color: %d\n", current_colour);
+
+    // stop when u detect one of the colors and put them in some variable
+    if (current_colour == 2 || current_colour == 3 || current_colour == 6) {
+        BT_motor_port_start(MOTOR_C, 0); // stopping colour sesnor motor
+        bottom_left = current_colour; // TODO: confrim assumption that motor first turns left
+        break;
+    }
+  }
+
+  fprintf(stdout, "done first bit\n");
+
+  // keep turning right, until you see yellow
+  BT_motor_port_start(MOTOR_C, -1 * MAX_SPEED );
+
+  while (1) {
+    int current_colour = read_colour(NUM_SMALL_SAMPLES);
+        fprintf(stdout, "current_color: %d\n", current_colour);
+
+    if (current_colour == 4) {
+        BT_motor_port_start(MOTOR_C, 0); // stopping colour sesnor motor
+        break;
+    }
+  }
+  fprintf(stdout, "done first.5 bit\n");
+
+  // now keep turning right until you seel green, white or blue
+  BT_motor_port_start(MOTOR_C, -1 * MAX_SPEED);
+
+  while (1) {
+    int current_colour = read_colour(NUM_SAMPLES);
+            fprintf(stdout, "current_color: %d\n", current_colour);
+
+    if (current_colour == 2 || current_colour == 3 || current_colour == 6) {
+        BT_motor_port_start(MOTOR_C, 0); // stopping colour sesnor motor
+        bottom_right = current_colour; // TODO: confrim assumption that motor first turns left
+        break;
+    }
+  }
+  // store in var
+
+  // move robot fwd till you see black
+  // move robot fwd, until you see green, white or blue
+  // store that in var
+
+  // maninder's code
+  // arm should be all the way to left
+  BT_motor_port_start(MOTOR_A | MOTOR_D, MAX_SPEED); // move forward
+  int state = 0;                                     // 0-before_black
+                                                     // 1-black
+                                                     // 2-after_black
+  int col_ind = 0;
+  while (1)
+  { // go forward until crosses black
+    col_ind = read_colour(NUM_SAMPLES);
+            fprintf(stdout, "current_color: %d\n", col_ind);
+
+    if (state == 0 && col_ind == 1) { // found road
+      state = 1;
+    } else if (state == 1 && (col_ind == 2 || col_ind == 3 || col_ind == 6))
+    { // found colour after road
+      state = 2;
+      top_right = col_ind;
+      BT_motor_port_start(MOTOR_A | MOTOR_D, 0);
+      break;
+    }
+  }
+
+
+
+
+  // turn color sensor left until you see black
+
+  BT_motor_port_start(MOTOR_C, MAX_SPEED);
+
+  while (1) {
+    int current_colour = read_colour(NUM_SAMPLES);
+    
+    if (current_colour == 1) {
+        BT_motor_port_start(MOTOR_C, 0); // stopping colour sesnor motor
+        break;
+    }
+  }
+
+  // turn color sensor left until you see green, white or blue
+  // store that in var
+  BT_motor_port_start(MOTOR_C, MAX_SPEED);
+
+  while (1) {
+    int current_colour = read_colour(NUM_SAMPLES);
+    
+    if (current_colour == 2 || current_colour == 3 || current_colour == 6) {
+        BT_motor_port_start(MOTOR_C, 0); // stopping colour sesnor motor
+        top_left = current_colour; // TODO: confrim assumption that motor first turns left
+        break;
+    }
+  }
+
+  fprintf(stdout, "\n inside get_colours_at_intersection() \n");
+  fprintf(stdout, "%d %d %d %d \n", bottom_left, bottom_right, top_right, top_left);
+
+
+
+  // realign color sesnor motor - has to be at 90 degrees again
+  // turn color sesnor right until you see black
+}
+
+// float get_colours(int *col_array, int *right_col, int *left_col)
+// {
+//   /***
+//   Parses col_array to find the correct colours at the left and right of the array
+//   Contains the correct logic to find these colours
+
+//   ***/
+//   int colors[10];
+
+//   // c^b^y^b^c
+//   // expecting: blue, white, black, yellow, green
+
+//   // this will compress and remove noise
+//   int cur_col=-1;
+//   int cur_index=0;
+//   for(int i=0; i<INTERSECTION_SAMPLES; i++){
+//       if (cur_col != col_array[i]){
+          
+//       }
+//   }
+
+//   *right_col = 1; // black
+//   *left_col = 3;  // green?
+// }
+
+// void read_colour_at_intersection()
+// {
+//   // Assume at intersection and robot stopped and that arm is ideal length
+//   int col_array[INTERSECTION_SAMPLES];
+//   int sample = INTERSECTION_SAMPLES;
+//   int bottom_right_col, bottom_left_col, top_right_col, top_left_col;
+
+//   // rotate color sensor motor right for 1 sec (hope its all the way)
+//   BT_motor_port_start(MOTOR_C,MAX_SPEED);
+//   // turn motor left slowly
+//   // start sampling the arc motion
+//   for (int i = 0; i < INTERSECTION_SAMPLES; i++)
+//   {
+//     col_array[i] = BT_read_colour_sensor(PORT_3);
+//   }
+
+//   get_colours(col_array, &bottom_right_col, &bottom_left_col); // this will somehow get colors from the array
+
+//   // HALF WAY POINT - now go forward and get samples
+
+//   // arm should be all the way to left
+//   BT_motor_port_start(MOTOR_A | MOTOR_D, MAX_SPEED); // move forward
+//   int state = 0;                                     // 0-before_black
+//                                                      // 1-black
+//                                                      // 2-after_black
+//   int col_ind = 0;
+//   while (1)
+//   { // go forward until crosses black
+//     col_ind = read_colour(NUM_SAMPLES);
+//     if (state == 0 && col_ind == 1) { // found road
+//       state = 1;
+//     } else if (state == 1 && col_ind != 1)
+//     { // found colour after road
+//       state = 2;
+//       BT_motor_port_start(MOTOR_A | MOTOR_D, 0);
+//       break;
+//     }
+//   }
+
+//   // turn arm all the way to the right
+//   // turn motor left slowly
+//   // start sampling the arc motion
+//   for (int i = 0; i < INTERSECTION_SAMPLES; i++)
+//   {
+//     col_array[i] = BT_read_colour_sensor(PORT_3);
+//   }
+
+//   get_colours(col_array, &top_right_col, &top_left_col); // this will somehow get colors from the array
+// }
+
 
 void turn_at_intersection(int direction)
 {

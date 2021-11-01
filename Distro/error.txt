@@ -1,0 +1,495 @@
+P6
+
+# CREATOR: GIMP PNM Filter Version 1.1
+nx=750, ny=960
+
+255
+
+Intersection parameters: base_x=181, base_y=154, width=29, height=30, horiz_distance=180, vertical_distance=156
+Map size: Number of horizontal intersections=3, number of vertical intersections=5
+Intersection location: 195, 169
+Colours for this intersection: 3, 6, 2, 6
+Intersection location: 375, 169
+Colours for this intersection: 6, 3, 2, 2
+Intersection location: 555, 169
+Colours for this intersection: 2, 6, 3, 6
+Intersection location: 195, 325
+Colours for this intersection: 2, 6, 3, 6
+Intersection location: 375, 325
+Colours for this intersection: 2, 6, 3, 6
+Intersection location: 555, 325
+Colours for this intersection: 6, 3, 2, 2
+Intersection location: 195, 481
+Colours for this intersection: 3, 2, 3, 6
+Intersection location: 375, 481
+Colours for this intersection: 2, 6, 3, 2
+Intersection location: 555, 481
+Colours for this intersection: 3, 2, 3, 6
+Intersection location: 195, 637
+Colours for this intersection: 3, 6, 2, 6
+Intersection location: 375, 637
+Colours for this intersection: 3, 2, 3, 6
+Intersection location: 555, 637
+Colours for this intersection: 2, 6, 3, 2
+Intersection location: 195, 793
+Colours for this intersection: 2, 6, 3, 2
+Intersection location: 375, 793
+Colours for this intersection: 2, 6, 3, 6
+Intersection location: 555, 793
+Colours for this intersection: 6, 3, 2, 2
+Request to connect to device 00:16:53:55:D9:FC
+All set, ready to go!
+BT_motor_port_start command string:
+D, 0, 1, 0, 80, 0, 0, A4, 0, 9, 81, F6, A6, 0, 9, 
+BT_drive command(): Command failed
+BT_read_colour_sensor command string:
+D, 0, 2, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 3, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 4, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 5, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 6, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 7, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 8, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 9, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, A, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, B, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, C, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, D, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, E, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, F, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 10, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 11, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 12, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 13, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 14, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 15, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 16, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 17, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 18, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 19, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 1A, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 1B, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 1C, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 1D, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_motor_port_start command string:
+D, 0, 1E, 0, 80, 0, 0, A4, 0, 9, 81, 0, A6, 0, 9, 
+BT_drive command(): Command failed
+BT_motor_port_start command string:
+D, 0, 1F, 0, 80, 0, 0, A4, 0, 4, 81, A, A6, 0, 4, 
+BT_drive command(): Command failed
+BT_read_colour_sensor command string:
+D, 0, 20, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 21, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 22, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 23, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 24, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 25, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 26, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 27, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 28, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 29, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 2A, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 2B, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 2C, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 2D, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_motor_port_start command string:
+D, 0, 2E, 0, 80, 0, 0, A4, 0, 4, 81, 0, A6, 0, 4, 
+BT_drive command(): Command failed
+BT_motor_port_start command string:
+D, 0, 2F, 0, 80, 0, 0, A4, 0, 4, 81, F6, A6, 0, 4, 
+BT_drive command(): Command failed
+BT_read_colour_sensor command string:
+D, 0, 30, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 31, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 32, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 33, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 34, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 35, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 36, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 37, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 38, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_motor_port_start command string:
+D, 0, 39, 0, 80, 0, 0, A4, 0, 4, 81, 0, A6, 0, 4, 
+BT_drive command(): Command failed
+BT_motor_port_start command string:
+D, 0, 3A, 0, 80, 0, 0, A4, 0, 4, 81, F6, A6, 0, 4, 
+BT_drive command(): Command failed
+BT_read_colour_sensor command string:
+D, 0, 3B, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 3C, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 3D, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 3E, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 3F, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 40, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 41, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_motor_port_start command string:
+D, 0, 42, 0, 80, 0, 0, A4, 0, 4, 81, 0, A6, 0, 4, 
+BT_drive command(): Command failed
+BT_motor_port_start command string:
+D, 0, 43, 0, 80, 0, 0, A4, 0, 9, 81, A, A6, 0, 9, 
+BT_drive command(): Command failed
+BT_read_colour_sensor command string:
+D, 0, 44, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 45, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 46, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 47, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 48, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 49, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 4A, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 4B, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 4C, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 4D, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 4E, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 4F, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 50, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 51, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 52, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 53, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 54, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 55, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 56, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 57, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 58, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 59, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 5A, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 5B, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 5C, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 5D, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 5E, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 5F, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 60, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 61, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 62, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 63, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 64, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 65, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 66, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 67, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 68, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 69, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 6A, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 6B, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 6C, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 6D, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_motor_port_start command string:
+D, 0, 6E, 0, 80, 0, 0, A4, 0, 9, 81, 0, A6, 0, 9, 
+BT_drive command(): Command failed
+BT_motor_port_start command string:
+D, 0, 6F, 0, 80, 0, 0, A4, 0, 4, 81, A, A6, 0, 4, 
+BT_drive command(): Command failed
+BT_read_colour_sensor command string:
+D, 0, 70, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 71, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 72, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 73, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 74, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 75, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 76, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 77, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 78, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 79, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 7A, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 7B, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 7C, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 7D, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_motor_port_start command string:
+D, 0, 7E, 0, 80, 0, 0, A4, 0, 4, 81, 0, A6, 0, 4, 
+BT_drive command(): Command failed
+BT_motor_port_start command string:
+D, 0, 7F, 0, 80, 0, 0, A4, 0, 4, 81, A, A6, 0, 4, 
+BT_drive command(): Command failed
+BT_read_colour_sensor command string:
+D, 0, 80, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 81, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 82, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 83, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 84, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 85, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 86, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_motor_port_start command string:
+D, 0, 87, 0, 80, 0, 0, A4, 0, 4, 81, 0, A6, 0, 4, 
+BT_drive command(): Command failed
+BT_motor_port_start command string:
+D, 0, 88, 0, 80, 0, 0, A4, 0, 4, 81, F6, A6, 0, 4, 
+BT_drive command(): Command failed
+BT_read_colour_sensor command string:
+D, 0, 89, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 8A, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 8B, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 8C, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 8D, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 8E, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 8F, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 90, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 91, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 92, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 93, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 94, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 95, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_read_colour_sensor command string:
+D, 0, 96, 0, 0, 1, 0, 99, 1C, 0, 2, 1D, 2, 1, 60, 
+BT_colour_sensor(): Command successful
+BT_motor_port_start command string:
+D, 0, 97, 0, 80, 0, 0, A4, 0, 4, 81, 0, A6, 0, 4, 
+BT_drive command(): Command failed
+Request to close connection to device at socket id 3

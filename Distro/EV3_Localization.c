@@ -163,10 +163,13 @@ int P_GREEN_INDEX = 2;
 #define TURN_RIGHT 4
 #define TURN_180 5
 
-int instruction_vectors[6][3] = {{-1, 0, 0}, {-1, -1, 1}, {-1, 1, -1},
-                                 {-1, 0, 1}, {-1, 0, -1}, {-1, 0, 2}};
+#define TURN_180_SUCC 6
 
-double instruction_probabilities[6] = {.9, .05, .05, .9, .9, .1};
+int instruction_vectors[7][3] = {{-1, 0, 0}, {-1, -1, 1}, {-1, 1, -1},
+                                 {-1, 0, 1}, {-1, 0, -1}, {-1, 0, 2},
+                                 {-1, 0, 2}};
+
+double instruction_probabilities[7] = {.9, .05, .05, .9, .9, .1, 1.0};
 
 inline int bound_direction(int d) { return (d + 4) % 4; }
 
@@ -244,51 +247,10 @@ int read_colour(int num_samples) {
 }
 
 int get_current_gyro(int setpoint) {
-  while (int curr_angle = BT_read_gyro_sensor(GYRO_PORT) != -1) {
+  int curr_angle = BT_read_gyro_sensor(GYRO_PORT);
+  while (curr_angle != -1) {
+    curr_angle = BT_read_gyro_sensor(GYRO_PORT);
     return setpoint - curr_angle;
-  }
-}
-
-int turn_till_black_gyro(int turnDirection) {
-  int pendulum_angle = 15; int curr_angle;
-  int colourID; int moving_back;
-
-  int setpoint = BT_read_gyro_sensor(GYRO_PORT);
-  for (pendulum_angle; pendulum_angle < 180; pendulum_angle += 15) {
-    BT_motor_port_start(MOTOR_D, turnDirection * -MAX_SPEED);
-    BT_motor_port_start(MOTOR_A, turnDirection * MAX_SPEED);
-    while (curr_angle = abs(get_current_gyro(setpoint)) < pendulum_angle) {
-      colourID = read_colour(NUM_SMALL_SAMPLES);
-      if (colourID == BLACK || colourID == YELLOW) {
-        BT_motor_port_stop(MOTOR_A | MOTOR_D, 1);
-        return turnDirection;
-      }
-    }
-
-    turnDirection *= -1; moving_back = false;
-    BT_motor_port_start(MOTOR_D, turnDirection * -MAX_SPEED);
-    BT_motor_port_start(MOTOR_A, turnDirection * MAX_SPEED);
-    
-    while (curr_angle = abs(get_current_gyro(setpoint)) < pendulum_angle || !moving_back ) {
-      if (curr_angle < pendulum_angle) moving_back = true;
-      colourID = read_colour(NUM_SMALL_SAMPLES);
-      if (colourID == BLACK || colourID == YELLOW) {
-        BT_motor_port_stop(MOTOR_A | MOTOR_D, 1);
-        return turnDirection;
-    }
-
-    turnDirection *= -1;
-    BT_motor_port_start(MOTOR_D, turnDirection * -MAX_SPEED);
-    BT_motor_port_start(MOTOR_A, turnDirection * MAX_SPEED);
-    
-    while (curr_angle = abs(get_current_gyro(setpoint)) >= 3) {
-      colourID = read_colour(NUM_SMALL_SAMPLES);
-      if (colourID == BLACK || colourID == YELLOW) {
-        BT_motor_port_stop(MOTOR_A | MOTOR_D, 1);
-        return turnDirection;
-    }
-  }
-}
   }
 }
 
@@ -573,62 +535,37 @@ int traverse_road(int (*exit_conditon_func)(int))
   }
 }
 
-
-
-int scan_corner(int direction, int *colour_pointer) {
-
+int scan_corner_drive(int direction, int *colour_pointer) {
   int success = 0;
 
-  //re-calibrate gyro
-  int setpoint = BT_read_gyro_sensor(GYRO_PORT);
+  // re-calibrate gyro
 
-  //scan for colour
-  BT_motor_port_start(ARM_MOTOR, direction * MAX_SPEED);
-  while (abs(get_current_gyro(setpoint)) < 91) {
-    if (int colourID = read_colour(NUM_SAMPLES) == BLUE || colourID == GREEN || colourID == WHITE) {
-      *colour_pointer = colourID;
-      success = 1; break;
-    }
-  }
-  BT_motor_port_start(ARM_MOTOR, 0); sleep(1);
-
-  //return to start position
-  BT_motor_port_start(ARM_MOTOR, -direction * MAX_SPEED);
-  while (int colourID = read_colour(NUM_SMALL_SAMPLES) != BLACK && colourID != YELLOW);
-  
-  //kill motor and return
-  BT_motor_port_start(ARM_MOTOR, 0);
-  return success;
-}
-
-int scan_corner_drive(int direction, int *colourPointer) {
-
-  int success = 0;
-
-  //re-calibrate gyro
-  int setpoint = BT_read_gyro_sensor(GYRO_PORT);
-
-  //scan for colour
+  // scan for colour
   BT_motor_port_start(RIGHT_WHEEL_MOTOR, direction * MAX_SPEED);
   BT_motor_port_start(LEFT_WHEEL_MOTOR, -direction * MAX_SPEED);
   while (1) {
-    if (int colourID = read_colour(NUM_SAMPLES) == BLUE || colourID == GREEN || colourID == WHITE) {
+    int colourID = read_colour(NUM_SMALL_SAMPLES);
+    if (colourID == BLUE || colourID == GREEN || colourID == WHITE) {
       *colour_pointer = colourID;
-      success = 1; break;
+      success = 1;
+      break;
     }
   }
-  BT_motor_port_start(ARM_MOTOR, 0); sleep(1);
+  BT_motor_port_stop(RIGHT_WHEEL_MOTOR || LEFT_WHEEL_MOTOR, 1);
+  sleep(1);
 
-  //return to start position
+  // return to start position
   BT_motor_port_start(RIGHT_WHEEL_MOTOR, -direction * MAX_SPEED);
   BT_motor_port_start(LEFT_WHEEL_MOTOR, direction * MAX_SPEED);
-  while (int colourID = read_colour(NUM_SMALL_SAMPLES) != BLACK && colourID != YELLOW);
-  
-  //kill motor and return
-  BT_motor_port_start(ARM_MOTOR, 0);
-  return success;
-}
+  while (1) {
+    int colourID = read_colour(NUM_SMALL_SAMPLES);
+    if (!(colourID != BLACK && colourID != YELLOW)) break;
+  }
 
+  // kill motor and return
+  BT_motor_port_stop(RIGHT_WHEEL_MOTOR || LEFT_WHEEL_MOTOR, 1);
+  sleep(1);
+  return success;
 }
 
 int scan_intersection_gyro(int *tl, int *tr, int *br, int *bl) {
@@ -686,26 +623,24 @@ int scan_intersection_gyro(int *tl, int *tr, int *br, int *bl) {
     }
   }
 
-  int success = scan_corner(RIGHT, br);
-  success = scan_corner(LEFT, bl);
+  int success = scan_corner_drive(RIGHT, br);
+  success = scan_corner_drive(LEFT, bl);
 
   traverse_road(intersection_or_boundary_detected);
   traverse_road(road_detected);
-  BT_motor_port_start(MOTOR_A || MOTOR_D, MAX_SPEED); sleep(1);
+  BT_motor_port_start(MOTOR_A || MOTOR_D, MAX_SPEED);
+  sleep(1);
   BT_motor_port_stop(MOTOR_A || MOTOR_A, 0);
   traverse_road(road_detected);
 
-  success = scan_corner(LEFT, tl);
-  success = scan_corner(RIGHT, tr);
+  success = scan_corner_drive(LEFT, tl);
+  success = scan_corner_drive(RIGHT, tr);
   // while (abs(get_current_gyro(GYRO_PORT)) > 3) {
   //   BT_motor_port_start(GYRO_PORT, )
   // }
 
-
-
   return (1);
 }
-
 
 int scan_intersection(int *tl, int *tr, int *br, int *bl) {
   /*
@@ -912,8 +847,10 @@ void turn_at_boundary(int direction) {
   int onCurrentRoad = 1;
   BT_motor_port_start(MOTOR_A, direction * MAX_SPEED);
   BT_motor_port_start(MOTOR_D, direction * -MAX_SPEED);
-  while (onCurrentRoad || !(on_road = road_detected(DO_COLOUR_READING))) {
-    if (onCurrentRoad && !on_road) {
+  while (1) {
+    int colourID = read_colour(NUM_SMALL_SAMPLES);
+    if (!(onCurrentRoad || !road_detected(colourID))) break;
+    if (onCurrentRoad && road_detected(colourID)) {
       onCurrentRoad = 0;
     }
   }
@@ -1130,6 +1067,10 @@ void update_beliefs(int action, double sensor_belief[400][4]) {
                   getActionProbability(TURN_RIGHT, absolute_pos) +
               instruction_probabilities[TURN_180] *
                   getActionProbability(TURN_180, absolute_pos);
+        } else if (action == TURN_180_SUCC) {
+          sensor_belief[index][direction] *=
+              instruction_probabilities[TURN_180_SUCC] *
+              getActionProbability(TURN_180_SUCC, absolute_pos);
         }
       }
     }
@@ -1228,7 +1169,7 @@ int robot_localization(int *robot_x, int *robot_y, int *direction) {
     }
   }
 
-  // int prior_action = GO_STRAIGHT;
+  int prior_action = GO_STRAIGHT;
 
   while (1) {
     int colourID = traverse_road(&intersection_or_boundary_detected);
@@ -1238,15 +1179,18 @@ int robot_localization(int *robot_x, int *robot_y, int *direction) {
       int tl, tr, bl, br;
       scan_intersection(&tl, &tr, &br, &bl);
       update_sensor_beliefs(tl, tr, br, bl, sensor_belief);
-      update_beliefs(GO_STRAIGHT, sensor_belief);
+      update_beliefs(prior_action, sensor_belief);
+      prior_action = GO_STRAIGHT;
     } else {
       // TODO update action here as well
       // ensure to check for 180 deg turn, if you do two consequtive turns
       // without going fwd
       turn_at_boundary(LEFT);
-      // if (prior_action == GO_STRAIGHT) {
-      //   prior_action = TURN_RIGHT;
-      // }
+      if (prior_action == GO_STRAIGHT) {
+        prior_action = TURN_LEFT;
+      } else {  // means this is 2nd time didnt read yellow
+        prior_action = TURN_180_SUCC;
+      }
     }
   }
 
@@ -1278,6 +1222,7 @@ int go_to_target(int robot_x, int robot_y, int direction, int target_x,
   /************************************************************************************************************************
    *   TO DO  -   Complete this function
    ***********************************************************************************************************************/
+
   return (0);
 }
 

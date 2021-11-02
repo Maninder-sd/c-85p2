@@ -78,7 +78,7 @@ void traverse_road(int (*exit_conditon_func)(int))
 }
 
 void play_tune_for_colour(int colour_id) {
-  return;  // remove later
+  // return;  // remove later
   if (colour_id == 2) {
     BT_play_tone_sequence(blue_tone);
   } else if (colour_id == 6) {
@@ -176,12 +176,12 @@ int main(int argc, char *argv[]) {
   int TURN_DIRECTION = -1;
 
   // get_colours_at_intersection();
-  get_colours_at_intersection_2();
+  // get_colours_at_intersection_2();
   // turn_at_intersection(TURN_DIRECTION);
   // road_find();
   // traverse_road(&intersection_or_boundary_detected);
   // BT_motor_port_start(MOTOR_D|MOTOR_A, MAX_SPEED);
-  // led_test();
+  led_test();
   printf("done");
 
   BT_close();

@@ -95,7 +95,7 @@
 #include <time.h>
 
 #define MAX_SPEED 10
-#define SENSOR_M_SPEED 10
+#define SENSOR_M_SPEED 8
 #define NUM_SAMPLES 7
 #define NUM_SMALL_SAMPLES 3
 #define DO_COLOUR_READING -1
@@ -111,26 +111,27 @@
 #define NO_COLOUR 0
 
 void road_find();
-void traverse_road(int (*exit_conditon_func)(int));
+int traverse_road(int (*exit_conditon_func)(int));
 int turn_till_black(int);
 double curr_time();
 void led_test();
 int read_colour(int);
 void get_colours_at_intersection();
 void get_colours_at_intersection_2();
+void print_belief(double beliefs[400][4]);
 
 int intersection_or_boundary_detected(int colourID) {
   if (colourID == DO_COLOUR_READING) {
     colourID = read_colour(NUM_SAMPLES);
   }
-  printf("int or bound : %d\n", colourID);
+  // printf("int or bound : %d\n", colourID);
   return (colourID == 5 || colourID == 4);  // change later
 }
 int boundary_detected(int colourID) {
   if (colourID == DO_COLOUR_READING) {
     colourID = read_colour(NUM_SAMPLES);
   }
-  printf("int or bound : %d\n", colourID);
+  // printf("int or bound : %d\n", colourID);
   return (colourID == 5);  // change later
 }
 int road_detected(int colourID) {
@@ -148,6 +149,22 @@ int P_BLUE_INDEX = 0;
 int P_WHITE_INDEX = 1;
 int P_GREEN_INDEX = 2;
 
+// Action Macros
+#define GO_STRAIGHT 0
+#define DRIFT_LEFT 1
+#define DRIFT_RIGHT 2
+#define TURN_LEFT 3
+#define TURN_RIGHT 4
+#define TURN_180 5
+
+int instruction_vectors[6][3] = {{-1, 0, 0}, {-1, -1, 1}, {-1, 1, -1},
+                                 {-1, 0, 1}, {-1, 0, -1}, {-1, 0, 2}};
+
+double instruction_probabilities[6] = {.9, .05, .05, .9, .9, .1};
+
+inline int bound_direction(int d) { return (d + 4) % 4; }
+
+// Sensor Probability Macros
 #define P_BLUE_G_BLUE .9
 #define P_BLUE_G_GREEN .05
 #define P_BLUE_G_WHITE .05
@@ -160,23 +177,24 @@ int P_GREEN_INDEX = 2;
 #define P_GREEN_G_GREEN .94
 #define P_GREEN_G_WHITE .05
 
-#define TURN_LEFT 1
-#define TURN_RIGHT -1
+#define LEFT 1
+#define RIGHT -1
 
 double colourProbMatrix[3][3] = {
     {P_BLUE_G_BLUE, P_BLUE_G_WHITE, P_BLUE_G_GREEN},
     {P_WHITE_G_BLUE, P_WHITE_G_WHITE, P_WHITE_G_GREEN},
     {P_GREEN_G_BLUE, P_GREEN_G_WHITE, P_GREEN_G_GREEN}};
 
-inline double getColourProbability(int colour_read, int colour_actual) {
-  return colourProbMatrix[getProbabilityColourIndex(colour_read)]
-                         [getProbabilityColourIndex(colour_actual)];
-}
-
 int getProbabilityColourIndex(int colourID) {
   if (colourID == BLUE) return P_BLUE_INDEX;
   if (colourID == WHITE) return P_WHITE_INDEX;
   if (colourID == GREEN) return P_GREEN_INDEX;
+  return -1;
+}
+
+inline double getColourProbability(int colour_read, int colour_actual) {
+  return colourProbMatrix[getProbabilityColourIndex(colour_read)]
+                         [getProbabilityColourIndex(colour_actual)];
 }
 
 int map[400][4];  // This holds the representation of the map, up to 20x20
@@ -184,6 +202,10 @@ int map[400][4];  // This holds the representation of the map, up to 20x20
                   // intersection.
 int sx, sy;       // Size of the map (number of intersections along x and y)
 double beliefs[400][4];  // Beliefs for each location and motion direction
+
+inline int check_intersection_in_bounds(int x, int y) {
+  return x < sx && y < sy && x >= 0 && y >= 0;
+}
 
 double curr_time() {
   // returns time in milliseconds since program started
@@ -253,9 +275,20 @@ int turn_till_black(int turnDirection) {
     colourID = read_colour(NUM_SMALL_SAMPLES);
     if (colourID == BLACK || colourID == YELLOW || colourID == BROWN) {
       printf("\n found black or yellow or brown %d\n", colourID);
-      BT_motor_port_stop(MOTOR_A | MOTOR_D, 0);
+      BT_motor_port_stop(MOTOR_A | MOTOR_D, 1);
       return returnDirection;
     }
+  }
+}
+
+void play_tune_for_colour(int colour_id) {
+  // return;  // remove later
+  if (colour_id == 2) {
+    BT_play_tone_sequence(blue_tone);
+  } else if (colour_id == 6) {
+    BT_play_tone_sequence(white_tone);
+  } else {
+    BT_play_tone_sequence(green_tone);
   }
 }
 
@@ -269,7 +302,7 @@ int main(int argc, char *argv[]) {
   sy = 0;
 
   if (argc < 4) {
-    fprintf(stderr, "Usage: EV3_Localization map_name dest_x dest_y\n");
+    fprintf(stderr, "Usage: EV3_Localization Map1.ppm 1 1\n");
     fprintf(stderr,
             "    map_name - should correspond to a properly formatted .ppm map "
             "image\n");
@@ -395,10 +428,25 @@ int main(int argc, char *argv[]) {
   // needed, any additional logic required to get the
   //        robot to complete its task should be here.
 
+  for (int i = 0; i < 50; i++) {
+    blue_tone[i][0] = -1;
+    blue_tone[i][1] = -1;
+    blue_tone[i][2] = -1;
+  }
+  blue_tone[0][0] = 100;
+  blue_tone[0][1] = 1000;
+  blue_tone[0][2] = 60;
+
   // turn_at_intersection(1);
-  // road_find();
+  print_belief(beliefs);
+  road_find();
+  traverse_road(&intersection_or_boundary_detected);
+  BT_motor_port_start(MOTOR_D | MOTOR_A, MAX_SPEED);
+  sleep(1);
+  BT_motor_port_start(MOTOR_D | MOTOR_A, 0);
+  traverse_road(&intersection_or_boundary_detected);
   // traverse_road(&intersection_or_boundary_detected);
-  int tl, tr, br, bl;
+  robot_localization(NULL, NULL, NULL);  // TODO: update vars
 
   road_find();
 
@@ -441,7 +489,7 @@ void road_find() {
   fprintf(stdout, "\nLeaving road_find()\n");
 }
 
-void traverse_road(int (*exit_conditon_func)(int))
+int traverse_road(int (*exit_conditon_func)(int))
 // keeps going forward until no more black
 {
   fprintf(stdout, "\n inside traverse_road() \n");
@@ -449,23 +497,21 @@ void traverse_road(int (*exit_conditon_func)(int))
   int turnDirection = 1;
 
   while (1) {
-    fprintf(stdout, "traverse before read\n");
-
-    fprintf(stdout, "traverse after read\n");
     colourID = read_colour(NUM_SAMPLES);
     if (exit_conditon_func(colourID)) {
-      fprintf(stdout, "exit cond true");
+      // fprintf(stdout, "exit cond true");
       BT_motor_port_stop(MOTOR_D | MOTOR_A, 1);
 
-      return;
+      return colourID;
     }
     BT_motor_port_start(MOTOR_A | MOTOR_D, MAX_SPEED);
 
     if (colourID != 1 && colourID != 4 &&
         colourID != 7)  // not black and not yellow
     {
-      fprintf(stdout, "colour ID: %d\n", colourID);
-      BT_motor_port_stop(MOTOR_A | MOTOR_D, 0);
+      printf("road lost %d\n", colourID);
+      // fprintf(stdout, "colour ID: %d\n", colourID);
+      BT_motor_port_stop(MOTOR_A | MOTOR_D, 1);
       // sleep(1);
       turnDirection = turn_till_black(turnDirection);
     }
@@ -507,6 +553,7 @@ int scan_intersection(int *tl, int *tr, int *br, int *bl) {
 
   // Return invalid colour values, and a zero to indicate failure (you will
   // replace this with your code)
+  printf("inside scan_intersection  \n");
   *(tl) = -1;
   *(tr) = -1;
   *(br) = -1;
@@ -525,7 +572,7 @@ int scan_intersection(int *tl, int *tr, int *br, int *bl) {
   BT_motor_port_start(MOTOR_D | MOTOR_A, -MAX_SPEED);
   while (1) {
     int current_colour = read_colour(NUM_SAMPLES);
-    fprintf(stdout, "current_color: %d\n", current_colour);
+    // fprintf(stdout, "current_color: %d\n", current_colour);
 
     // stop when u detect black
     if (current_colour == 1) {
@@ -542,12 +589,13 @@ int scan_intersection(int *tl, int *tr, int *br, int *bl) {
   BT_motor_port_start(MOTOR_C, SENSOR_M_SPEED);
   while (1) {
     int current_colour = read_colour(NUM_SAMPLES);
-    fprintf(stdout, "current_color: %d\n", current_colour);
+    // fprintf(stdout, "current_color: %d\n", current_colour);
 
     // stop when u detect one of the colors and put them in some variable
     if (current_colour == 2 || current_colour == 3 || current_colour == 6) {
       BT_motor_port_start(MOTOR_C, 0);  // stopping colour sesnor motor
-      bottom_left = current_colour;     // TODO: confrim assumption that
+      // BT_motor_port_start(MOTOR_C, 0);
+      bottom_right = current_colour;  // TODO: confrim assumption that
       // play_tune_for_colour(bottom_left);
       break;
     }
@@ -560,7 +608,7 @@ int scan_intersection(int *tl, int *tr, int *br, int *bl) {
   BT_motor_port_start(MOTOR_C, -1 * SENSOR_M_SPEED);
   while (1) {
     int current_colour = read_colour(NUM_SMALL_SAMPLES);
-    fprintf(stdout, "current_color: %d\n", current_colour);
+    // fprintf(stdout, "current_color: %d\n", current_colour);
 
     if (current_colour == 1) {
       BT_motor_port_start(MOTOR_C, 0);  // stopping colour sesnor motor
@@ -573,11 +621,11 @@ int scan_intersection(int *tl, int *tr, int *br, int *bl) {
   BT_motor_port_start(MOTOR_C, -1 * SENSOR_M_SPEED);
   while (1) {
     int current_colour = read_colour(NUM_SAMPLES);
-    fprintf(stdout, "current_color: %d\n", current_colour);
+    // fprintf(stdout, "current_color: %d\n", current_colour);
 
     if (current_colour == 2 || current_colour == 3 || current_colour == 6) {
       BT_motor_port_start(MOTOR_C, 0);  // stopping colour sesnor motor
-      bottom_right = current_colour;    // TODO: confrim assumption that
+      bottom_left = current_colour;     // TODO: confrim assumption that
       // play_tune_for_colour(bottom_right);
       break;
     }
@@ -592,14 +640,14 @@ int scan_intersection(int *tl, int *tr, int *br, int *bl) {
   int colourID = 0;
   while (1) {  // go forward until crosses black
     colourID = read_colour(NUM_SAMPLES);
-    fprintf(stdout, "current_color: %d\n", colourID);
+    // fprintf(stdout, "current_color: %d\n", colourID);
 
     if (state == 0 && colourID == 1) {  // found road
       state = 1;
     } else if (state == 1 && (colourID == 2 || colourID == 3 ||
                               colourID == 6)) {  // found colour after road
       state = 2;
-      top_right = colourID;
+      top_left = colourID;
 
       BT_motor_port_start(MOTOR_A | MOTOR_D, 0);
       // play_tune_for_colour(top_right);
@@ -631,7 +679,7 @@ int scan_intersection(int *tl, int *tr, int *br, int *bl) {
 
     if (current_colour == 2 || current_colour == 3 || current_colour == 6) {
       BT_motor_port_start(MOTOR_C, 0);  // stopping colour sesnor motor
-      top_left = current_colour;        // TODO: confrim assumption that motor
+      top_right = current_colour;       // TODO: confrim assumption that motor
       // play_tune_for_colour(top_left);
       break;
     }
@@ -650,19 +698,37 @@ int scan_intersection(int *tl, int *tr, int *br, int *bl) {
     }
   }
 
-  fprintf(stdout, "\n inside get_colours_at_intersection() \n");
-  fprintf(stdout, "%d %d %d %d \n", bottom_left, bottom_right, top_right,
-          top_left);
+  // fprintf(stdout, "\n inside get_colours_at_intersection() \n");
+  fprintf(stdout, " intersection colours%d %d %d %d \n", top_left, top_right,
+          bottom_right, bottom_left);
 
   // realign color sesnor motor - has to be at 90 degrees again
   // turn color sesnor right until you see black
 
   *(tl) = top_left;
   *(tr) = top_right;
-  *(br) = bottom_left;
-  *(bl) = bottom_right;
+  *(br) = bottom_right;
+  *(bl) = bottom_left;
 
   return (1);
+}
+
+void turn_at_boundary(int direction) {
+  printf("inside turnat boundary \n");
+  BT_motor_port_start(MOTOR_D | MOTOR_A, -20);
+  while (!road_detected(DO_COLOUR_READING)) {
+  }
+  BT_motor_port_stop(MOTOR_D | MOTOR_A, 1);
+
+  int onCurrentRoad = 1;
+  BT_motor_port_start(MOTOR_A, direction * MAX_SPEED);
+  BT_motor_port_start(MOTOR_D, direction * -MAX_SPEED);
+  while (onCurrentRoad || !road_detected(DO_COLOUR_READING)) {
+    if (onCurrentRoad && !road_detected(DO_COLOUR_READING)) {
+      onCurrentRoad = 0;
+    }
+  }
+  BT_motor_port_stop(MOTOR_D | MOTOR_A, 1);
 }
 
 void turn_at_intersection(int direction) {
@@ -674,6 +740,7 @@ void turn_at_intersection(int direction) {
             1 turns robot to left
            -1 turns robot to right
   ***/
+  printf("turn at intersection \n");
   traverse_road(&road_detected);
   traverse_road(&intersection_or_boundary_detected);
 
@@ -691,60 +758,98 @@ void turn_at_intersection(int direction) {
       onCurrentRoad = 0;
     }
   }
-  BT_motor_port_stop(MOTOR_D | MOTOR_A, 0);
+  BT_motor_port_stop(MOTOR_D | MOTOR_A, 1);
 }
 
 void normalize_belief(double beliefs[400][4]) {
-  int sum = 0;
+  double sum = 0;
   for (int intersection_x = 0; intersection_x < sx; intersection_x++) {
     for (int intersection_y = 0; intersection_y < sy; intersection_y++) {
-      int index = intersection_y + (intersection_x * sx);
+      int index = intersection_x + (intersection_y * sx);
       for (int direction = 0; direction < 4; direction++) {
         sum += beliefs[index][direction];
       }
     }
   }
 
+  printf("sum: %f\n", sum);
   for (int intersection_x = 0; intersection_x < sx; intersection_x++) {
     for (int intersection_y = 0; intersection_y < sy; intersection_y++) {
-      int index = intersection_y + (intersection_x * sx);
+      int index = intersection_x + (intersection_y * sx);
       for (int direction = 0; direction < 4; direction++) {
         beliefs[index][direction] /= sum;
       }
     }
   }
+
+  sum = 0;
+  for (int intersection_x = 0; intersection_x < sx; intersection_x++) {
+    for (int intersection_y = 0; intersection_y < sy; intersection_y++) {
+      int index = intersection_x + (intersection_y * sx);
+      for (int direction = 0; direction < 4; direction++) {
+        sum += beliefs[index][direction];
+      }
+    }
+  }
+  printf("final sum: %f\n", sum);
 }
 
 void print_belief(double beliefs[400][4]) {
   for (int direction = 0; direction < 4; direction++) {
-    printf("\n\ndirection: %d\n", direction);
+    // printf("\n\ndirection: %d\n", direction);
     for (int intersection_x = 0; intersection_x < sx; intersection_x++) {
       for (int intersection_y = 0; intersection_y < sy; intersection_y++) {
-        int index = intersection_y + (intersection_x * sx);
-        printf("belief[int_x=%d][int_y=%d]: %d  ", intersection_x,
-               intersection_y, beliefs[index][direction]);
+        int index = intersection_x + (intersection_y * sx);
+        // printf("belief[int_x=%d][int_y=%d]: %f  \n", intersection_x,
+        //        intersection_y, beliefs[index][direction]);
+        printf("belief (x,y,dir) %d %d %d  %f  \n", intersection_x,
+               intersection_y, direction, beliefs[index][direction]);
       }
       printf("\n");
     }
   }
+
+  fflush(stdout);
 }
 
-void update_beliefs(int tl, int tr, int bl, int br,
-                    double sensor_belief[400][4]) {
+void find_largest_beliefs() {
+  double curr_largest = 0.0;
+  // int max_x,max_y,max_dir;
   for (int intersection_y = 0; intersection_y < sy; intersection_y++)
     for (int intersection_x = 0; intersection_x < sx; intersection_x++)
       for (int direction = 0; direction < 4; direction++) {
-        int index = intersection_y + (intersection_x * sx);
+        int index = intersection_x + (intersection_y * sx);
+        if (curr_largest <= beliefs[index][direction]) {
+        }
+      }
+}
+
+void update_sensor_beliefs(int tl, int tr, int br, int bl,
+                           double sensor_belief[400][4]) {
+  // print_belief(sensor_belief);
+  for (int intersection_y = 0; intersection_y < sy; intersection_y++)
+    for (int intersection_x = 0; intersection_x < sx; intersection_x++)
+      for (int direction = 0; direction < 4; direction++) {
+        int index = intersection_x + (intersection_y * sx);
 
         int m_tl = map[index][(direction + 0) % 4];
         int m_tr = map[index][(direction + 1) % 4];
-        int m_bl = map[index][(direction + 2) % 4];
-        int m_br = map[index][(direction + 3) % 4];
+        int m_br = map[index][(direction + 2) % 4];
+        int m_bl = map[index][(direction + 3) % 4];
+
+        // if (intersection_y == 0 && intersection_x == 0 && direction == 0) {
+        //   printf("map colours: %d %d %d %d \n", m_tl, m_tr, m_br, m_bl);
+        // }
 
         double p_tl = getColourProbability(tl, m_tl);
         double p_tr = getColourProbability(tr, m_tr);
         double p_bl = getColourProbability(bl, m_bl);
         double p_br = getColourProbability(br, m_br);
+
+        printf("high belief intersection (x,y,direction): (%d, %d, %d)\n",
+               intersection_x, intersection_y, direction);
+        printf("  p_tl: %f p_tr: %f p_bl: %f p_br: %f\n", p_tl, p_tr, p_bl,
+               p_br);
 
         double p_sensor = p_tl * p_tr * p_bl * p_br;
 
@@ -753,7 +858,102 @@ void update_beliefs(int tl, int tr, int bl, int br,
         sensor_belief[index][direction] = p_sensor;
       }
 
-  normalize_belief(sensor_belief);
+  // normalize_belief(sensor_belief);
+  // print_belief(sensor_belief);
+}
+
+void modify_absolute_instruction(int absolute_instruction[3], int direction) {
+  int temp;
+  temp = absolute_instruction[0];
+
+  if (direction == 0) {
+    absolute_instruction[0] = absolute_instruction[1];
+    absolute_instruction[1] = -temp;
+    return;
+  }
+
+  if (direction == 1) return;
+  if (direction == 2) {
+    absolute_instruction[0] = absolute_instruction[1];
+    absolute_instruction[1] = temp;
+    return;
+  }
+
+  if (direction == 3) {
+    absolute_instruction[0] = -absolute_instruction[0];
+    absolute_instruction[1] = -absolute_instruction[1];
+    return;
+  }
+}
+
+double getActionProbability(int action, int absolute_pos[3]) {
+  int absolute_instruction[3] = {instruction_vectors[action][0],
+                                 instruction_vectors[action][1],
+                                 instruction_vectors[action][2]};
+
+  modify_absolute_instruction(absolute_instruction, absolute_pos[2]);
+  int prior_pos[3] = {
+      absolute_pos[0] + absolute_instruction[0],
+      absolute_pos[1] + absolute_instruction[1],
+      bound_direction(absolute_pos[2] + absolute_instruction[2])};
+
+  if (absolute_pos[0] == 0 && absolute_pos[1] == 0) {
+    printf("current postiion %d %d %d \n", absolute_pos[0], absolute_pos[1],
+           absolute_pos[2]);
+    printf("prior postiion %d %d %d \n", prior_pos[0], prior_pos[1],
+           prior_pos[2]);
+    printf("action %d \n", action);
+  }
+
+  if (!check_intersection_in_bounds(prior_pos[0], prior_pos[1])) return 0;
+
+  int index = prior_pos[0] + sx * prior_pos[1];
+  return beliefs[index][prior_pos[2]];
+}
+
+void update_beliefs(int action, double sensor_belief[400][4]) {
+  // copy global beliefs into onld_beliefs
+
+  for (int pos_x = 0; pos_x < sx; pos_x++)
+    for (int pos_y = 0; pos_y < sy; pos_y++) {
+      int index = pos_y * sx + pos_x;
+      for (int direction = 0; direction < 4; direction++) {
+        int absolute_pos[3] = {pos_x, pos_y, direction};
+        if (action == GO_STRAIGHT) {
+          sensor_belief[index][direction] *=
+              instruction_probabilities[GO_STRAIGHT] *
+                  getActionProbability(GO_STRAIGHT, absolute_pos) +
+              instruction_probabilities[DRIFT_LEFT] *
+                  getActionProbability(DRIFT_LEFT, absolute_pos) +
+              instruction_probabilities[DRIFT_RIGHT] *
+                  getActionProbability(DRIFT_RIGHT, absolute_pos);
+        } else if (action == TURN_LEFT) {
+          sensor_belief[index][direction] *=
+              instruction_probabilities[TURN_LEFT] *
+                  getActionProbability(TURN_LEFT, absolute_pos) +
+              instruction_probabilities[TURN_180] *
+                  getActionProbability(TURN_180, absolute_pos);
+        } else if (action == TURN_RIGHT) {
+          sensor_belief[index][direction] *=
+              instruction_probabilities[TURN_RIGHT] *
+                  getActionProbability(TURN_RIGHT, absolute_pos) +
+              instruction_probabilities[TURN_180] *
+                  getActionProbability(TURN_180, absolute_pos);
+        }
+      }
+    }
+
+  // copying new beliefs into old beliefs
+  for (int pos_x = 0; pos_x < sx; pos_x++)
+    for (int pos_y = 0; pos_y < sy; pos_y++) {
+      int index = pos_y * sx + pos_x;
+      for (int direction = 0; direction < 4; direction++) {
+        beliefs[index][direction] = sensor_belief[index][direction];
+      }
+    }
+
+  normalize_belief(beliefs);
+  print_belief(beliefs);
 }
 
 int robot_localization(int *robot_x, int *robot_y, int *direction) {
@@ -810,7 +1010,6 @@ int robot_localization(int *robot_x, int *robot_y, int *direction) {
 
   // Return an invalid location/direction and notify that localization was
   // unsuccessful (you will delete this and replace it with your code).
-
   // Initialize beliefs - uniform probability for each location and direction
   // for (int j = 0; j < sy; j++)
   //   for (int i = 0; i < sx; i++) {
@@ -819,7 +1018,6 @@ int robot_localization(int *robot_x, int *robot_y, int *direction) {
   //     beliefs[i + (j * sx)][2] = 1.0 / (double)(sx * sy * 4);
   //     beliefs[i + (j * sx)][3] = 1.0 / (double)(sx * sy * 4);
   //   }
-
   // *          The beliefs array contains one row per intersection (recall that
   //  *the number of intersections in the map_image is given by sx, sy, and that
   //  *the map[][] array contains the colour indices of buildings around each
@@ -831,21 +1029,33 @@ int robot_localization(int *robot_x, int *robot_y, int *direction) {
   // *(direction) = -1;
 
   double sensor_belief[400][4];
+  // double action_belief[400][4];
+
+  for (int i = 0; i < 400; i++) {
+    for (int j = 0; j < 4; j++) {
+      sensor_belief[i][j] = 0;
+    }
+  }
+
+  // int prior_action = GO_STRAIGHT;
 
   while (1) {
-    traverse_road(&intersection_or_boundary_detected);
+    int colourID = traverse_road(&intersection_or_boundary_detected);
     // if intercetion then scan
-    int colourID = read_colour(NUM_SAMPLES);
 
     if (colourID == YELLOW) {
       int tl, tr, bl, br;
-      scan_intersection(&tl, &tr, &bl, &br);
-      update_beliefs(tl, tr, bl, br, sensor_belief);
+      scan_intersection(&tl, &tr, &br, &bl);
+      update_sensor_beliefs(tl, tr, br, bl, sensor_belief);
+      update_beliefs(GO_STRAIGHT, sensor_belief);
     } else {
-      // update action here as well
+      // TODO update action here as well
       // ensure to check for 180 deg turn, if you do two consequtive turns
       // without going fwd
-      turn_at_intersection(TURN_LEFT);
+      turn_at_boundary(LEFT);
+      // if (prior_action == GO_STRAIGHT) {
+      //   prior_action = TURN_RIGHT;
+      // }
     }
   }
 

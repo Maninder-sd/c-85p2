@@ -110,6 +110,12 @@
 #define BROWN 7
 #define NO_COLOUR 0
 
+// Motor code
+#define GYRO_PORT PORT_1
+#define ARM_MOTOR MOTOR_C
+#define LEFT_WHEEL_MOTOR MOTOR_D
+#define RIGHT_WHEEL_MOTOR MOTOR_A
+
 void road_find();
 int traverse_road(int (*exit_conditon_func)(int));
 int turn_till_black(int);
@@ -235,6 +241,55 @@ int read_colour(int num_samples) {
     }
   }
   return max_ind;
+}
+
+int get_current_gyro(int setpoint) {
+  while (int curr_angle = BT_read_gyro_sensor(GYRO_PORT) != -1) {
+    return setpoint - curr_angle;
+  }
+}
+
+int turn_till_black_gyro(int turnDirection) {
+  int pendulum_angle = 15; int curr_angle;
+  int colourID; int moving_back;
+
+  int setpoint = BT_read_gyro_sensor(GYRO_PORT);
+  for (pendulum_angle; pendulum_angle < 180; pendulum_angle += 15) {
+    BT_motor_port_start(MOTOR_D, turnDirection * -MAX_SPEED);
+    BT_motor_port_start(MOTOR_A, turnDirection * MAX_SPEED);
+    while (curr_angle = abs(get_current_gyro(setpoint)) < pendulum_angle) {
+      colourID = read_colour(NUM_SMALL_SAMPLES);
+      if (colourID == BLACK || colourID == YELLOW) {
+        BT_motor_port_stop(MOTOR_A | MOTOR_D, 1);
+        return turnDirection;
+      }
+    }
+
+    turnDirection *= -1; moving_back = false;
+    BT_motor_port_start(MOTOR_D, turnDirection * -MAX_SPEED);
+    BT_motor_port_start(MOTOR_A, turnDirection * MAX_SPEED);
+    
+    while (curr_angle = abs(get_current_gyro(setpoint)) < pendulum_angle || !moving_back ) {
+      if (curr_angle < pendulum_angle) moving_back = true;
+      colourID = read_colour(NUM_SMALL_SAMPLES);
+      if (colourID == BLACK || colourID == YELLOW) {
+        BT_motor_port_stop(MOTOR_A | MOTOR_D, 1);
+        return turnDirection;
+    }
+
+    turnDirection *= -1;
+    BT_motor_port_start(MOTOR_D, turnDirection * -MAX_SPEED);
+    BT_motor_port_start(MOTOR_A, turnDirection * MAX_SPEED);
+    
+    while (curr_angle = abs(get_current_gyro(setpoint)) >= 3) {
+      colourID = read_colour(NUM_SMALL_SAMPLES);
+      if (colourID == BLACK || colourID == YELLOW) {
+        BT_motor_port_stop(MOTOR_A | MOTOR_D, 1);
+        return turnDirection;
+    }
+  }
+}
+  }
 }
 
 int turn_till_black(int turnDirection) {
@@ -518,6 +573,140 @@ int traverse_road(int (*exit_conditon_func)(int))
   }
 }
 
+
+
+int scan_corner(int direction, int *colour_pointer) {
+
+  int success = 0;
+
+  //re-calibrate gyro
+  int setpoint = BT_read_gyro_sensor(GYRO_PORT);
+
+  //scan for colour
+  BT_motor_port_start(ARM_MOTOR, direction * MAX_SPEED);
+  while (abs(get_current_gyro(setpoint)) < 91) {
+    if (int colourID = read_colour(NUM_SAMPLES) == BLUE || colourID == GREEN || colourID == WHITE) {
+      *colour_pointer = colourID;
+      success = 1; break;
+    }
+  }
+  BT_motor_port_start(ARM_MOTOR, 0); sleep(1);
+
+  //return to start position
+  BT_motor_port_start(ARM_MOTOR, -direction * MAX_SPEED);
+  while (int colourID = read_colour(NUM_SMALL_SAMPLES) != BLACK && colourID != YELLOW);
+  
+  //kill motor and return
+  BT_motor_port_start(ARM_MOTOR, 0);
+  return success;
+}
+
+int scan_corner_drive(int direction, int *colourPointer) {
+
+  int success = 0;
+
+  //re-calibrate gyro
+  int setpoint = BT_read_gyro_sensor(GYRO_PORT);
+
+  //scan for colour
+  BT_motor_port_start(RIGHT_WHEEL_MOTOR, direction * MAX_SPEED);
+  BT_motor_port_start(LEFT_WHEEL_MOTOR, -direction * MAX_SPEED);
+  while (1) {
+    if (int colourID = read_colour(NUM_SAMPLES) == BLUE || colourID == GREEN || colourID == WHITE) {
+      *colour_pointer = colourID;
+      success = 1; break;
+    }
+  }
+  BT_motor_port_start(ARM_MOTOR, 0); sleep(1);
+
+  //return to start position
+  BT_motor_port_start(RIGHT_WHEEL_MOTOR, -direction * MAX_SPEED);
+  BT_motor_port_start(LEFT_WHEEL_MOTOR, direction * MAX_SPEED);
+  while (int colourID = read_colour(NUM_SMALL_SAMPLES) != BLACK && colourID != YELLOW);
+  
+  //kill motor and return
+  BT_motor_port_start(ARM_MOTOR, 0);
+  return success;
+}
+
+}
+
+int scan_intersection_gyro(int *tl, int *tr, int *br, int *bl) {
+  /*
+   * This function carries out the intersection scan - the bot should
+   * (obviously) be placed at an intersection for this, and the specific set of
+   * actions will depend on how you designed your bot and its sensor. Whatever
+   * the process, you should make sure the intersection scan is reliable - i.e.
+   * the positioning of the sensor is reliably over the buildings it needs to
+   * read, repeatably, and as the robot moves over the map.
+   *
+   * Use the APIs sensor reading calls to poll the sensors. You need to remember
+   * that sensor readings are noisy and unreliable so * YOU HAVE TO IMPLEMENT
+   * SOME KIND OF SENSOR / SIGNAL MANAGEMENT * to obtain reliable measurements.
+   *
+   * Recall your lectures on sensor and noise management, and implement a
+   * strategy that makes sense. Document your process in the code below so your
+   * TA can quickly understand how it works.
+   *
+   * Once your bot has read the colours at the intersection, it must return them
+   * using the provided pointers to 4 integer variables:
+   *
+   * tl - top left building colour
+   * tr - top right building colour
+   * br - bottom right building colour
+   * bl - bottom left building colour
+   *
+   * The function's return value can be used to indicate success or failure, or
+   * to notify your code of the bot's state after this call.
+   */
+
+  /************************************************************************************************************************
+   *   TO DO  -   Complete this function
+   ***********************************************************************************************************************/
+
+  // Return invalid colour values, and a zero to indicate failure (you will
+  // replace this with your code)
+  printf("inside scan_intersection  \n");
+  *(tl) = -1;
+  *(tr) = -1;
+  *(br) = -1;
+  *(bl) = -1;
+
+  // Move back till black
+  BT_motor_port_start(MOTOR_D | MOTOR_A, -MAX_SPEED);
+  while (1) {
+    int current_colour = read_colour(NUM_SAMPLES);
+    // fprintf(stdout, "current_color: %d\n", current_colour);
+
+    // stop when u detect black
+    if (current_colour == 1) {
+      BT_motor_port_start(MOTOR_D | MOTOR_A,
+                          0);  // stopping colour sesnor motor
+      break;
+    }
+  }
+
+  int success = scan_corner(RIGHT, br);
+  success = scan_corner(LEFT, bl);
+
+  traverse_road(intersection_or_boundary_detected);
+  traverse_road(road_detected);
+  BT_motor_port_start(MOTOR_A || MOTOR_D, MAX_SPEED); sleep(1);
+  BT_motor_port_stop(MOTOR_A || MOTOR_A, 0);
+  traverse_road(road_detected);
+
+  success = scan_corner(LEFT, tl);
+  success = scan_corner(RIGHT, tr);
+  // while (abs(get_current_gyro(GYRO_PORT)) > 3) {
+  //   BT_motor_port_start(GYRO_PORT, )
+  // }
+
+
+
+  return (1);
+}
+
+
 int scan_intersection(int *tl, int *tr, int *br, int *bl) {
   /*
    * This function carries out the intersection scan - the bot should
@@ -723,8 +912,8 @@ void turn_at_boundary(int direction) {
   int onCurrentRoad = 1;
   BT_motor_port_start(MOTOR_A, direction * MAX_SPEED);
   BT_motor_port_start(MOTOR_D, direction * -MAX_SPEED);
-  while (onCurrentRoad || !road_detected(DO_COLOUR_READING)) {
-    if (onCurrentRoad && !road_detected(DO_COLOUR_READING)) {
+  while (onCurrentRoad || !(on_road = road_detected(DO_COLOUR_READING))) {
+    if (onCurrentRoad && !on_road) {
       onCurrentRoad = 0;
     }
   }
@@ -753,8 +942,10 @@ void turn_at_intersection(int direction) {
   int onCurrentRoad = 1;
   BT_motor_port_start(MOTOR_A, direction * MAX_SPEED);
   BT_motor_port_start(MOTOR_D, direction * -MAX_SPEED);
-  while (onCurrentRoad || !road_detected(DO_COLOUR_READING)) {
-    if (onCurrentRoad && !road_detected(DO_COLOUR_READING)) {
+  while (1) {
+    int colourID = read_colour(NUM_SMALL_SAMPLES);
+    if (!(onCurrentRoad || !road_detected(colourID))) break;
+    if (onCurrentRoad && !road_detected(colourID)) {
       onCurrentRoad = 0;
     }
   }
